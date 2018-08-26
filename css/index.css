@@ -1,0 +1,93 @@
+*{box-sizing: border-box;padding: 0;margin: 0;}
+html{font-size: 100px;font-family: 方正兰亭黑_GBK;}
+.fl{float: left;}
+.fr{float: right;}
+/*清除浮动*/
+.clearfix{*zoom:1;} /*解决ie6/7下面的浮动塌陷问题*/
+.clearfix:before,.clearfix:after{display:block;clear:both;height:0;visibility:hidden;content:" ";}
+#app{margin:0 auto;height: auto;}
+a{display: inline-block;text-align: center; text-decoration: none; width: 100%;}
+.page1{width: 100%;height: auto;}
+.page1-content{width: 90%;height: auto;margin: 30% auto 10% auto;}
+.up-l,.up-r{width: 80%;font-size: 45px;line-height: .6rem}
+.up-l{text-align: left;font-weight: bold;}
+.up-r{width: 20%;text-align:center;border:2px solid #0181ff;color: #0181ff;border-radius: 30px;
+    background: #d8ecff;font-size: 38px;}
+.cont{font-size: 14px;line-height: 40px;margin: 5% auto;}
+.radio input[type="radio"]{width: 30px;height: 30px;}
+.radio label{font-size: 30px}
+.agree{margin: 0 15%;}
+.gray{
+    -webkit-filter: grayscale(100%);
+    -moz-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    -o-filter: grayscale(100%);
+    filter: grayscale(100%);
+    filter: gray;
+}
+.mark{position:absolute;top:20%;left:5%; width: 90%;height: auto;background: #fff;border-radius: 5px;
+    font-size: 45px;text-align: center;}
+.mark .cont{font-size: 30px;width: 80%;margin: 10% auto;line-height: 50px;text-align: left;}
+.close{border: none;color:#0181ff;font-size: 36px;margin: 0 0 40px 0}
+.rgba{background: rgba(0,0,0,.3)}
+.line{font-size: 40px;}
+/* page2 */
+.page2,.page3{background: #ececec;height: auto;}
+.page2-title{width: 100%;height: auto;font-size: 40px;text-align: center;background: #fff;
+    line-height: 2rem;}
+.img-title{display: block}
+form{font-size: 30px}
+.must{color:red;}
+#select02{ margin: 6% auto}
+.select{font-size: 30px;background: #fff;width: 100%;height: 1.5rem;margin: 1% auto}
+
+.select-l, input[type="radio"],.select-r input[type="radio"]{width: 25px;height: 25px;}
+.select-l{width: 20%;}
+.select-r{width: 80%;}
+.left-margin{padding: 0 0 0 20px}
+.form-name,.form-id,.form-num,.form-tel,.form-code{width: 100%;height: 1rem;background: #fff;line-height: .8rem;margin: 1% auto}
+.form-name input[type="text"],.form-id select,.form-num input[type="number"],.form-tel input[type="number"]
+,.form-code input[type="text"]{border: none;border-radius: 30px;height: 60px;width: 80%;border: 2px solid #0181ff;
+    font-size: 30px;text-indent: 32px}
+#select,.page3 select{    
+    /*Chrome和Firefox里面的边框是不一样的，所以复写了一下*/
+    border: solid 2px #0181ff;   
+    /*很关键：将默认的select选择框样式清除*/
+    appearance:none;
+    -moz-appearance:none;
+    -webkit-appearance:none;   
+    /*在选择框的最右侧中间显示小箭头图片*/
+    background: url("../img/select.png") no-repeat scroll right center transparent; 
+    /*为下拉小箭头留出一点位置，避免被文字覆盖*/
+    padding-right: 14px;}
+/*清除ie的默认选择框样式清除，隐藏下拉箭头*/
+select::-ms-expand { display: none; }
+/* .page3 input[type=date]::-webkit-calendar-picker-indicato{visibility: hidden;} */
+.page3 select,.page3 input[type=date],.page4 select{background: url("../img/select-icon.png") no-repeat scroll right center transparent;}
+
+#select option{font-size: 14px;}
+.form-code input[type="text"]{width: 50%;border: none;border-left: 2px solid #0181ff;border-top: 2px solid #0181ff;
+    border-bottom: 2px solid #0181ff;border-radius: 30px 0 0 30px;}
+.form-code .send-code,.count{width: 30%;font-size: 25px;padding: 14px 20px;background: rgba(196, 225, 255, 0.8);
+border-radius: 0 30px 30px 0;border: none;cursor: pointer;color:#0181ff;}
+#page3,#page4{width: 2rem;margin: 10% auto;display: block; padding: 20px 30px;border: none;background:#c2e0fd ;color:#0181ff;border-radius: 60px;font-size: 30px}
+/* page3 */
+.page3,.page4{background: #ececec;height: 16rem;font-size: 32px}
+.alignment{text-align: justify;}
+.alignment i{display:inline-block;width:100%;}
+.page3 input[type="text"],.page3 input[type="number"],.page3 input[type="date"],.page3 select{border: none;width: 80%;height: .5rem;font-size: 30px;margin: 0 10%;}
+.page3 select option{font-size: 14px;}
+input[type="text"]:focus{border-bottom: 1px solid red;border-top: none;border-left: none;border-right:none;}
+.page3-title,.page3-div,.page4-div{width: 100%;line-height:1rem;height:1rem;background: #fff;margin: 0 0 10px 0;}
+.id-start{height: 2rem;}
+.id-start input[type="radio"]{margin: 0 0 0 10%;}
+.id-start input[type="text"],.id-end input[type="text"]{width: 50%;text-indent: 32px;}
+.select-l-end{width: 30%}
+.select-r-end{width: 70%}
+/* page4 */
+.page4-address{height: 2rem;}
+#address-radio{margin: 0 0 0 10%}
+.page4 input[type="text"],.page4 input[type="number"],.page4 input[type="date"],.page4 select{border: none;width: 80%;height: .5rem;font-size: 30px;margin: 0 10%;}
+.page4-select-l{width: 40%;}
+.page4-select-r{width: 60%;}
+
