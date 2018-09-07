@@ -1,0 +1,10 @@
+*{margin: 0;padding: 0}
+.fl{float: left;}
+.fr{float: right;}
+body{background: #ececec;}
+/*清除浮动*/
+.clearfix{*zoom:1;} /*解决ie6/7下面的浮动塌陷问题*/
+.clearfix:before,.clearfix:after{display:block;clear:both;height:0;visibility:hidden;content:" ";}
+.idType-l{width: 20%;height: 50px;}
+.idType-r{width: 80%;height: 50px;}
+.apply span{color:red;}
