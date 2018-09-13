@@ -1,4 +1,3 @@
-
 Vue.use(Vuex)
 var myStore =  new Vuex.Store({    
     state:{
@@ -17,12 +16,12 @@ var myStore =  new Vuex.Store({
         endEnd : '' ,     
         fixedFixed : '' ,     
         addressAddress : '' ,
-        netNet : '' ,
-        secondNetNet : '',
-        deliveryD : '',
-        addressRadioR : '', 
-        positive : '',
-        negative : '' ,
+        netNet: '' ,
+        secondNetNet: '',
+        deliveryD: '',
+        addressRadioR: '', 
+        positive: '',
+        negative: '' ,
         obtainBirth: ''
      },
      mutations:{
@@ -339,8 +338,8 @@ var codeComponent = {
 var page1 = {    
     data(){
         return {
-            isShow:false,
-            isBack:false,
+            isShow: false,
+            isBack: false,
             showSwitch: true,
             oneShow: true,
             twoShow: true,
@@ -365,7 +364,8 @@ var page1 = {
         },        
         foo(){
             if(this.oneShow == null && this.twoShow == null){                  
-                this.isBack = true              
+                this.isBack = true   
+                this.showSwitch = !this.showSwitch           
                 this.$router.push({path: '/page2'})
             }
         },        
@@ -373,8 +373,7 @@ var page1 = {
             $('.page1').removeClass('rgba')
         }
     },
-    template:`
-    
+    template:`    
     <div class="page1">
             <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡">        
             <div class="page1-content">
@@ -420,8 +419,11 @@ var page2 = {
     data(){
         return{
             show: true,
-            isShow :false,
-            isBox :false,
+            isShow:false,
+            isBox:false,
+            isBox2:false,
+            isBox3:false,
+            isBox4:false,
             isWarn: false,
             telWarn: false,
             codeWarn: false,
@@ -434,10 +436,9 @@ var page2 = {
             idmodel :'', 
             codemodel : '', 
             ramodel : '',
-            show: true,
-            num: 1,
-            num2: 2 ,
-            birth: ''                             
+            show: true,            
+            birth: '' ,
+            showSwitch: true                            
         }
     },    
     mounted() {        
@@ -477,11 +478,11 @@ var page2 = {
           name(){
               reg=/^[\u4e00-\u9fa5a-zA-Z]+$/;
               if(!reg.test(this.in_value)){
-                  this.isBox = true                  
+                  this.isBox2 = true                  
                   this.in_value = ''
                   this.isWarn = true                  
               } else{
-                  this.isBox = false
+                  this.isBox2 = false
                   this.isWarn = false
               }             
          },   
@@ -489,11 +490,11 @@ var page2 = {
          tel(){ 
             regTel = /^1[3|4|5|7|8]\d{9}$/;            
             if(!regTel.test(this.telmodel)){
-                this.isBox = true
+                this.isBox3 = true
                 this.telmodel = ''
                 this.telWarn = true  
             }else{
-                this.isBox = false
+                this.isBox3 = false
                 this.telWarn = false
             }   
          }, 
@@ -501,11 +502,11 @@ var page2 = {
          code(){
              recode = /^\d{6}$/;            
              if(!recode.test(this.codemodel)){                 
-                this.isBox = true
+                this.isBox4 = true
                 this.codemodel = ''
                 this.codeWarn = true
              }else{
-                this.isBox = false
+                this.isBox4 = false
                 this.codeWarn = false
              }
          },
@@ -581,14 +582,9 @@ var page2 = {
                 this.name();
                 this.code();
                 this.tel();  
-                this.idCallback();                
-                this.isBox = true;
-                // if(this.onetypemodel == '01'){
-                //     this.birth = this.idmodel.substring(6, 10) + "-" + this.idmodel.substring(10, 12) + "-" + this.idmodel.substring(12, 14);
-                //     return this.birth;
-                // }
+                this.idCallback(); 
              }else{ 
-                this.isBox = false
+                this.showSwitch = !this.showSwitch                
                 this.$router.push({ path : '/page3'})
              }                                 
          },
@@ -598,9 +594,15 @@ var page2 = {
          backHandle(){  //返回上级路由
             this.$router.back()
          }, 
-         sure(){
-            if(this.isBox == true) this.isBox = false            
-         },         
+         sure2(){                        
+            if(this.isBox2 == true) this.isBox2 = false 
+         },
+         sure3(){     
+            if(this.isBox3 == true) this.isBox3 = false            
+         }, 
+         sure4(){     
+            if(this.isBox4 == true) this.isBox4 = false            
+         },        
     },
     watch:{
          //onetypemodel(val,oldVal){    //反过来监听                  
@@ -734,21 +736,41 @@ var page2 = {
                     this.idWarn = false                    
                 }  
             }         
-        }
+        },
+        '$route' (to,from){  //监听路由是否是第一屏             
+            if(from.path == '/page3'){                
+                this.showSwitch = true
+            }
+        },    
     },
     template:`
-    <div class="page2">
-        <div :class="{warnMark: isBox}">
-            <div class="warnBox" :class="{warnAnmit: isBox}">
+    <transition name="fade">
+    <div v-if="showSwitch" class="page2">               
+        <div :class="{warnMark: isBox2}">
+            <div class="warnBox" :class="{warnAnmit: isBox2}">
                 <h3>温馨提示</h3>
-                <p>您的输入有误！请重新输入！</p>
-                <button @click="sure">确定</button>
+                <p>您的姓名有误！请重新输入！</p>
+                <button @click="sure2">确定</button>
+            </div>
+        </div>
+        <div :class="{warnMark: isBox3}">
+            <div class="warnBox" :class="{warnAnmit: isBox3}">
+                <h3>温馨提示</h3>
+                <p>您的手机号码有误！请重新输入！</p>
+                <button @click="sure3">确定</button>
+            </div>
+        </div>
+        <div :class="{warnMark: isBox4}">
+            <div class="warnBox" :class="{warnAnmit: isBox4}">
+                <h3>温馨提示</h3>
+                <p>您的手机号码有误！请重新输入！</p>
+                <button @click="sure4">确定</button>
             </div>
         </div>
         <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡">
         <div class="page2-title">
-            <div @click="backHandle" class="fl backRouter"><</div>
-            <div class="title fl" >企业社保卡申请</div>            
+            <div @click="backHandle" class="fl backRouter iconfont">&#xe610;</div>
+            <div class="title fl">企业社保卡申请</div>            
         </div> 
         <div class="page2-contant">
             <div class="select">
@@ -813,18 +835,18 @@ var page2 = {
             </div>
             <button @click="jump();aa()"id="page3">下一步</button>            
         </div>
-    </div>    
+    </div>  
+    </transition>  
     `
 }
 var page3 = { 
     data(){
          return{      
-            // sexmodel :'',
+            //sexmodel:'',
             // birthmodel :'',
             countrymodel :'',
             nationmodel :'',
-            occupationmodel :'',
-            idTypemodel :'',
+            occupationmodel :'',            
             startmodel : '' ,     
             endmodel : '' , 
             fixedmodel : '' ,
@@ -833,13 +855,23 @@ var page3 = {
             id_value: myStore.state.idId,
             tel_value: myStore.state.telTel,            
             isBox: false, 
+            isBox2: false, 
+            isBox3: false, 
+            isBox4: false, 
+            isBox5: false, 
             idWarn : false ,
             show: true ,
             nameAbled: false ,       
             idAbled: false ,       
             telAbled: false ,              
             idmodel : myStore.state.idId , 
-            onetypemodel: myStore.state.oneType,              
+            onetypemodel: myStore.state.oneType,
+            showSwitch: true,
+            idWarn: false,              
+            idWarn2: false,              
+            idWarn3: false,              
+            idWarn4: false,              
+           //sexmodel: myStore.state.oneType,              
          }
     },             
     mounted() { 
@@ -878,10 +910,39 @@ var page3 = {
             }
           }, 
          jump(){ 
-            if(this.sexmodel == '' || this.birthmodel == '' || this.countrymodel == '' || this.nationmodel == '' || this.occupationmodel == '' || this.idTypemodel == '' || this.startmodel == '' || this.idnummodel == '' || this.telmodel == ''){
+             //地区
+            if(this.countrymodel == ''){
+                this.isBox2 = true
+                this.idWarn = true                
+            }else{       
+                this.isBox2 = false
+            }  
+            //民族
+            if(this.nationmodel == ''){
+                this.isBox3 = true
+                this.idWarn2 = true                
+            }else{      
+                this.isBox3 = false
+            } 
+            //职业
+            if(this.occupationmodel == ''){
+                this.isBox4 = true
+                this.idWarn3 = true                
+            }else{       
+                this.isBox4 = false
+            }
+            //起始日期
+            if(this.startmodel == ''){
+                this.isBox5 = true
+                this.idWarn4 = true                
+            }else{          
+                this.isBox5 = false
+            }           
+            if(this.sexmodel == '' || this.birthmodel == '' || this.countrymodel == '' || this.nationmodel == '' || this.occupationmodel == '' || this.onetypemodel == '' || this.startmodel == '' || this.idnummodel == '' || this.telmodel == ''){
                 this.isBox = true                
             }else{
                 this.isBox = false
+                this.showSwitch = !this.showSwitch
                 this.$router.push({ path : '/page4'})
             }                    
          },
@@ -894,38 +955,69 @@ var page3 = {
          }, 
          sure(){
             if(this.isBox == true) this.isBox = false            
+         },
+         sure2(){
+            if(this.isBox2 == true) this.isBox2 = false            
+         },  
+         sure3(){
+            if(this.isBox3 == true) this.isBox3 = false            
+         }, 
+         sure4(){
+            if(this.isBox4 == true) this.isBox4 = false            
+         }, 
+         sure5(){
+            if(this.isBox5 == true) this.isBox5 = false            
          },   
     },   
     computed:{
         birthmodel(){
             this.birth = this.idmodel.substring(6, 10) + "-" + this.idmodel.substring(10, 12) + "-" + this.idmodel.substring(12, 14);
             return this.birth;
-        },
-        // sexmodel(){  //获取性别
-        //     this.sex = parseInt(this.idmodel.substr(16, 1)) % 2           
-        //     if (this.sex == 1) {                 
-        //         console.log('男')
-        //     } else{
-        //         console.log('女')
-        //     }           
-        // },               
+        },        
+        sexmodel(){           
+            this.sex = parseInt(this.idmodel.substr(16, 1)) % 2
+            if(this.sex == 1){
+                return this.sex
+            }
+            if(this.sex == 2){
+                return this.sex
+            }
+            if(this.sex == 9){
+                return this.sex
+            }
+        }                      
     }, 
-    watch:{   
-        idTypemodel(val){
-            if(onetypemodel == '01'){
-                val = onetypemodel
+    watch:{ 
+        countrymodel(){
+            if(this.countrymodel!=0){
+                this.idWarn = false
             }
         },
-        // sexmodel(val){//获取性别
-        //     this.sex = parseInt(this.idmodel.substr(16, 1)) % 2           
-        //     if (this.sex == 1) { 
-        //         console.log(111)                           
-        //         val = '男'
-        //     } else{
-        //         console.log(222) 
-        //         val = '女'
-        //     }           
-        // },            
+        nationmodel(){
+            if(this.nationmodel!=0){
+                this.idWarn2 = false
+            }
+        },
+        occupationmodel(){
+            if(this.occupationmodel!=0){
+                this.idWarn3 = false
+            }
+        },
+        startmodel(){
+            if(this.startmodel!=0){
+                this.idWarn4 = false
+            }
+        },
+        '$route' (to,from){  //监听路由是否是第一屏             
+            if(from.path == '/page4'){                
+                this.showSwitch = true
+            }
+        },   
+        onetypemodel(val){
+            if(this.onetypemodel == '01'){
+                this.onetypemodel = val                 
+            }            
+        },                   
         //长期有效
         long(){
             if(!this.long){                           
@@ -935,19 +1027,48 @@ var page3 = {
             }                                             
         },             
     }, 
-    template:`    
-    <div class="page3">            
-        <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡">
+    template:`
+    <transition name="fade">   
+    <div v-if="showSwitch" class="page3">  
         <div :class="{warnMark: isBox}">
             <div class="warnBox" :class="{warnAnmit: isBox}">
                 <h3>温馨提示</h3>
-                <p>您的输入有误！请重新输入！</p>
+                <p>您的输入不完整！</p>
                 <button @click="sure">确定</button>
             </div>
-        </div>        
+        </div>
+        <div :class="{warnMark: isBox2}">
+            <div class="warnBox" :class="{warnAnmit: isBox2}">
+                <h3>温馨提示</h3>
+                <p>您的地区输入为空！请重新输入！</p>
+                <button @click="sure2">确定</button>
+            </div>
+        </div>
+        <div :class="{warnMark: isBox3}">
+            <div class="warnBox" :class="{warnAnmit: isBox3}">
+                <h3>温馨提示</h3>
+                <p>您的民族输入为空！请重新输入！</p>
+                <button @click="sure3">确定</button>
+            </div>
+        </div>
+        <div :class="{warnMark: isBox4}">
+            <div class="warnBox" :class="{warnAnmit: isBox4}">
+                <h3>温馨提示</h3>
+                <p>您的职业输入为空！请重新输入！</p>
+                <button @click="sure4">确定</button>
+            </div>
+        </div>  
+        <div :class="{warnMark: isBox5}">
+            <div class="warnBox" :class="{warnAnmit: isBox5}">
+                <h3>温馨提示</h3>
+                <p>您的起始日期输入为空！请重新输入！</p>
+                <button @click="sure5">确定</button>
+            </div>
+        </div>            
+        <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡">                
         <div class="page3-title left-margin" >
-            <div @click="backHandle" class="fl backRouter backRouter3"><</div>
-            <div class="title fl">个人信息（必填）{{onetypemodel}}</div>            
+            <div @click="backHandle" class="fl backRouter backRouter3 iconfont">&#xe610;</div>
+            <div class="title fl">个人信息（必填）</div>            
         </div>  
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">姓名<i></i></div>
@@ -958,7 +1079,7 @@ var page3 = {
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">性别<i></i></div>
             <div class="select-r fl">
-                <select @input="fn1" v-model="sexmodel">
+                <select @input="fn1" disabled v-model="sexmodel">
                     <option value="">----- 请选择 -----</option>
                     <option value="1">男</option>
                     <option value="2">女</option>
@@ -969,13 +1090,13 @@ var page3 = {
         <div class="page3-div left-margin">
             <div class="select-l fl alignment start_date_left">出生日期<i></i></div>
             <div class="select-r fl">
-                <input type="date" @input="fn1" v-model="birthmodel" class="date">                
+                <input type="date" disabled @input="fn1" v-model="birthmodel" class="date">                
             </div>            
         </div>        
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">国籍/地区<i></i></div>
             <div class="select-r fl">
-                <select @input="fn1" v-model="countrymodel" >                    
+                <select @input="fn1" v-model="countrymodel" :class="{warn: idWarn}">                    
                     <option value="">----- 请选择 -----</option>
                     <option value="ABW">阿鲁巴岛 ABW</option>
                     <option value="AFG">阿富汗 AFG</option>
@@ -1227,7 +1348,7 @@ var page3 = {
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">民族<i></i></div>
             <div class="select-r fl">
-                <select id="nation" @input="fn1" v-model="nationmodel">
+                <select id="nation" @input="fn1" v-model="nationmodel" :class="{warn: idWarn2}">
                     <option value="">----- 请选择 -----</option>
                     <option value="01">汉族</option>
                     <option value="02">蒙古族</option>
@@ -1292,7 +1413,7 @@ var page3 = {
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">职业<i></i></div>
             <div class="select-r fl">
-                <select @input="fn1" v-model="occupationmodel">
+                <select @input="fn1" v-model="occupationmodel" :class="{warn: idWarn3}">
                     <option value="">----- 请选择 -----</option>
                     <option value="11">国家公务员（包括参照、依照公务员管理的人员）</option>
                     <option value="12">机关工勤人员</option>
@@ -1316,7 +1437,7 @@ var page3 = {
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">证件类型<i></i></div>
             <div class="select-r fl">
-                <select @input="fn1" v-model="idTypemodel">
+                <select @input="fn1" disabled v-model="onetypemodel">
                     <option value="">----- 请选择 -----</option>
                     <option value="01">居民身份证(户口簿)</option>
                     <option value="02">中国人民解放军军官证</option>
@@ -1332,7 +1453,7 @@ var page3 = {
         <div class="page3-div left-margin id-start">
             <div class="select-l fl alignment">证件起始日期<i></i></div> 
             <div class="select-r fl">          
-                <input type="date" @input="fn1" v-model="startmodel">
+                <input type="date" @input="fn1" v-model="startmodel" :class="{warn: idWarn4}">
                 <input type="radio" v-model="long" id="long" @click="toggle"> 
                 <label for="long">长期有效勾选 (勾选截止日期将不可用)</label>                
             </div>             
@@ -1358,11 +1479,12 @@ var page3 = {
         <div class="page3-div left-margin">
             <div class="select-l fl alignment select-l-end">固定电话(选填)<i></i></div>
             <div class="select-r fl select-r-end">
-                <input type="number" :class="{warn: idWarn}" @input="fn1"  id="fixtel" @change="fix" v-model="fixedmodel" placeholder="请输入您的固定电话">
+                <input type="number" @input="fn1"  id="fixtel" @change="fix" v-model="fixedmodel" placeholder="请输入您的固定电话">
             </div>
         </div> 
         <button @click="jump" id="page4">下一步</button>                          
-    </div>    
+    </div>  
+    </transition>  
 `
 }
 var page4 = {
@@ -1373,7 +1495,12 @@ var page4 = {
            delivery :'', 
            secondnetmodel : '' ,
            addressRadio : '' , 
-           isBox:false,           
+           isBox:false,  
+           isBox2:false,  
+           addressDis:false, 
+           showSwitch: true, 
+           isWarn:false,       
+           isWarn2:false,       
            area:[ 
                 // {
                 //     text:'----- 请选择 -----',
@@ -1770,8 +1897,7 @@ var page4 = {
         }
    },    
    created(){    　　
-        this.netmodel = this.area[0].text;        
-        
+        this.netmodel = this.area[0].text; 
    },  
    mounted() {        
        myStore.state.addressAddress = this.addressmodel; 
@@ -1799,44 +1925,86 @@ var page4 = {
            myStore.state.addressRadioR = this.addressRadio;                                 
        },        
        jump(){ 
-            if(this.addressmodel == '' || this.delivery == '' || this.netmodel == '' || this.secondnetmodel == '' ){
+            //通讯地址
+            if(this.addressmodel == ''){                
                 this.isBox = true
+                this.idWarn = true
             }else{
-                this.isBox = false
+                this.isBox = false                
+            }            
+            //投递地址
+            if(this.delivery == ''){
+                this.isBox2 = true
+                this.idWarn2 = true
+            }else{
+                this.isBox2 = false
+            }
+            if(this.addressmodel == '' || this.delivery == '' || this.netmodel == '' || this.secondnetmodel == '' ){
+                
+            }else{
+                this.showSwitch =!this.showSwitch                
                 this.$router.push({ path : '/page5'})
             }                    
         }, 
         address(){
             this.addressRadio = !this.addressRadio
-            if(this.addressmodel!=0){
-                this.delivery = this.addressmodel
-            }
+            if(this.addressRadio){               
+                 this.addressmodel = this.delivery
+            }            
         },
         sure(){
             if(this.isBox == true) this.isBox = false            
         },
+        sure2(){
+            if(this.isBox2 == true) this.isBox2 = false            
+        },
         backHandle(){  //返回上级路由
             this.$router.back()
         },           
-   },          
+    },
+    watch:{
+        '$route' (to,from){  //监听路由是否是第一屏             
+            if(from.path == '/page5'){                
+                this.showSwitch = true
+            }
+        }, 
+        addressmodel(){
+            if(this.addressmodel!=0){
+                this.idWarn = false
+            }
+        },
+        delivery(){
+            if(this.delivery!=0){
+                this.idWarn2 = false
+            }
+        }
+    },              
     template:`
-    <div class="page4">    
+    <transition name="fade">
+    <div v-if="showSwitch" class="page4">    
     <div :class="{warnMark: isBox}">
         <div class="warnBox" :class="{warnAnmit: isBox}">
             <h3>温馨提示</h3>
-            <p>您的输入有误！请重新输入！</p>
+            <p>您的通讯地址为空！请重新输入！</p>
             <button @click="sure">确定</button>
+        </div>
+    </div>
+    <div :class="{warnMark: isBox2}">
+        <div class="warnBox" :class="{warnAnmit: isBox2}">
+            <h3>温馨提示</h3>
+            <p>您的投递地址为空！请重新输入！</p>
+            <button @click="sure2">确定</button>
         </div>
     </div>
     <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡"> 
     <div class="page3-title left-margin" >
-        <div @click="backHandle" class="fl backRouter"><</div>
+        <div @click="backHandle" class="fl backRouter iconfont">&#xe610;</div>
         <div class="title fl">地址信息（必填）</div>
     </div>  
     <div class="page3-div left-margin page4-address">
         <div class="select-l fl alignment">通讯地址<i></i></div>
         <div class="select-r fl ">
-            <input type="text" @input="fn1" v-model="addressmodel" placeholder="例如：上海市闵行区">
+            <input type="text" :class="{warn: idWarn}" @input="fn1" :display="addressDis" v-model="addressmodel" placeholder="例如：上海市闵行区">
             <input type="radio" name="address" id="address-radio" v-model="addressRadio" @click="address">
             <label for="address-radio">与投递地址一致</label>            
         </div>           
@@ -1850,7 +2018,7 @@ var page4 = {
     <div class="page4-div left-margin">
         <div class="select-l page4-select-l fl alignment">上海市投递地址<i></i></div>
         <div class="select-r page4-select-r fl ">
-            <input type="text" @input="fn1" v-model="delivery" placeholder="例如：上海市闵行区">                    
+            <input type="text" @input="fn1" v-model="delivery" :class="{warn: idWarn2}" placeholder="例如：上海市闵行区">                    
         </div>  
     </div>
     <div class="page4-div left-margin">
@@ -1877,13 +2045,14 @@ var page4 = {
     </div>            
     <button @click="jump" id="page4">下一步</button>                           
 </div>
+</transition>
     `
 }
 var page5 = {
     data(){
         return {
             in_value : myStore.state.count ,
-            onetypemodel : myStore.state.typeType,
+            onetypemodel : myStore.state.oneType,
             telmodel : myStore.state.telTel ,
             idmodel : myStore.state.idId ,
             sexmodel : myStore.state.sexSex,
@@ -1900,7 +2069,8 @@ var page5 = {
             secondnetmodel : myStore.state.secondNetNet,
             delivery : myStore.state.deliveryD,
             imgUrl: myStore.state.positive,
-            isBox:false,  
+            isBox:false, 
+            showSwitch: true 
         }
     },
     methods:{
@@ -1912,7 +2082,8 @@ var page5 = {
             $('.information').hide();
             $('.left-margin').hide();
             $('#page5').hide();
-            $('#page5-sub').hide(); 
+            $('#page5-sub').hide();
+            this.showSwitch = !this.showSwitch 
             this.$router.push({path:'/page6'})           
         },
         backHandle(){  //返回上级路由
@@ -1922,8 +2093,16 @@ var page5 = {
             if(this.isBox == true) this.isBox = false            
         },
     },
+    watch:{
+        '$route' (to,from){  //监听路由是否是第一屏             
+            if(from.path == '/page6'){                
+                this.showSwitch = true
+            }
+        }, 
+    }, 
     template:`
-    <div class="page5"> 
+    <transition name="fade">
+    <div v-if="showSwitch" class="page5"> 
         <div :class="{warnMark: isBox}">
             <div class="warnBox" :class="{warnAnmit: isBox}">
                 <h3>温馨提示</h3>
@@ -1933,7 +2112,7 @@ var page5 = {
         </div>           
         <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡"> 
         <div class="page3-title left-margin">
-            <div @click="backHandle" class="fl backRouter"><</div>
+            <div @click="backHandle" class="fl backRouter iconfont">&#xe610;</div>
             <div class="title fl">您输入的信息如下所示，请检查是否正确</div>
         </div> 
         <div class="information">
@@ -1945,8 +2124,7 @@ var page5 = {
             <p>出生日期：{{birthmodel}}</p>            
             <p>国籍/地区：{{countrymodel}}</p>            
             <p>民族：{{nationmodel}}</p>            
-            <p>职业：{{occupationmodel}}</p>            
-            <p>证件类型：{{idTypemodel}}</p>            
+            <p>职业：{{occupationmodel}}</p> 
             <p>证件起始日期：{{startmodel}}</p>
             <p>证件截止日期：{{endmodel}}</p> 
             <p>固定电话：{{fixedmodel}}</p>           
@@ -1958,6 +2136,7 @@ var page5 = {
         <button @click="modify" id="page5">返回修改</button>                
         <button @click="confirm" id="page5-sub">确认提交</button>              
     </div>
+    </transition>
     `
 }
 var page6 = {
@@ -2006,7 +2185,7 @@ var page6 = {
         </div>
         <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡"> 
         <div class="left-margin">
-            <div @click="backHandle" class="fl backRouter"><</div>
+            <div @click="backHandle" class="fl backRouter iconfont">&#xe610;</div>
             <div class="title fl">请上传身份证正反面照片，确保图片清晰，四角完整</div>
         </div>                      
         <div class="id_img_wp">
@@ -2064,8 +2243,7 @@ var router = new VueRouter({
         {
             path:"/page6",
             component:page6
-        }, 
-                      
+        },                               
 // 路由重定向，保证打开页面的时候显示在设置的页面中（本demo设置的为推荐页/recommend）
         {
             path:"*",
@@ -2077,19 +2255,20 @@ var router = new VueRouter({
 
 
 let vm = new Vue({
-    el:"#app", 
+    el:"#app",     
     router:router,  //路由 
     store:myStore,
     mounted:function(){
         console.log(this)//控制台
     }, 
     data:{
-        isShow:false,        
+        isShow:false,
+        showSwitch:false        
     },
     //组件
     components:{
-        page1:page1,
-        apply:apply,
+        page1: page1,
+        apply: apply,
         code2: codeComponent
     },
     //方法
@@ -2105,7 +2284,7 @@ let vm = new Vue({
                 this.isShow = false
             }else{
                 this.isShow = true
-            }; 
+            };             
         },    
         meta: {        
             keepAlive: true
