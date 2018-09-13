@@ -4,14 +4,18 @@ html,body{height: 100%;overflow-x: hidden;}
 .fl{float: left;}
 .fr{float: right;}
 body{background: #ececec;}
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
 /*清除浮动*/
 .clearfix{*zoom:1;} /*解决ie6/7下面的浮动塌陷问题*/
 .clearfix:before,.clearfix:after{display:block;clear:both;height:0;visibility:hidden;content:" ";}
 /*input warn*/
 .warn{border: 2px solid red!important;}
 /*返回按钮*/
-.backRouter{width: 13%;font-size: 30px;}
-.title{width: 80%;font-weight: bold;text-align: center}
+.backRouter,.backRoute3{line-height: 1.3rem;height: 1.3rem;width: 13%;font-size: 40px;position: absolute;top:0;left:0;color:#fff;text-align: center}
+.backRoute3{top:1%;left:0;}
+.title{width: 100%;font-weight: bold;text-align: center}
 /*警告框*/
 @keyframes warnbox{
     0%{transform: scale(0,0)}
@@ -40,12 +44,25 @@ a{text-align: center; text-decoration: none; width: 100%;}
 .radio label{font-size: 30px}
 .agree{width: 70%;line-height: 120px;margin:0 0 0 15%; background: rgb(172, 171, 171);color:#fff;font-size: 30px;
 border: none;border-radius: 10px}
+.agree_back{background: #54b8f4}
 /*组件之间切换的动画*/
-.fade-enter-active, .fade-leave-active {
-    transition: transform .5s linear;
+.Router {
+    position: absolute;
+    width: 100%;
+    transition: all .8s ease;
+    top: 40px;
 }
-.fade-enter, .fade-leave-to  {
-    transform: translate(100%,0);
+.slide-left-enter,
+.slide-right-leave-active {
+    opacity: 0;
+   -webkit-transform: translate(100%, 0);
+   transform: translate(100%, 0);
+}
+.slide-left-leave-active,
+.slide-right-enter {
+    opacity: 0;
+   -webkit-transform: translate(-100%, 0);
+   transform: translate(-100% 0);
 }
 
 .mark{position:absolute;top:20%;left:5%; width: 90%;height: auto;background: #fff;border-radius: 5px;
@@ -60,7 +77,7 @@ border: none;border-radius: 10px}
 .code_close{padding:20px 40px;width: 20%; font-size: 30px;border:2px solid#0181ff;background: #c2e0fd;
     border-radius: 50px;color:#0181ff;margin: 50% 0 0 40%}
 /* page2 */
-.page2,.page3{background: #ececec;height: auto;}
+.page2,.page3{background: #ececec;height: 100%;}
 .page2-title{width: 100%;height: 1.5rem;text-align: center;background: #fff;line-height: 1.5rem;
     font-size: 40px;}
 .img-title{display: block}

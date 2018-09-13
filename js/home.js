@@ -22,10 +22,11 @@ var myStore =  new Vuex.Store({
         deliveryD : '',
         addressRadioR : '', 
         positive : '',
-        negative : ''       
-    },
-    mutations:{
-         //显式的更改state里的数据 
+        negative : '' ,
+        obtainBirth: ''
+     },
+     mutations:{
+         //显式的更改state里的数据         
      },
      getters:{
          //获取数据的方法         
@@ -339,26 +340,41 @@ var page1 = {
     data(){
         return {
             isShow:false,
+            isBack:false,
+            showSwitch: true,
+            oneShow: true,
+            twoShow: true,
         }       
-    },
-    methods:{
-        check(){
-            if($('#one').is(':checked') && $('#two').is(':checked')){        
-                $('.agree').removeAttr("disabled");
-                $('.agree').css({'background':'#54b8f4'})                                        
-            }else{                    
-                $('.agree').attr('disabled',false)                
+    }, 
+    watch:{
+        oneShow(){
+            if(this.oneShow == null && this.twoShow == null){                  
+                this.isBack = true
             }
         },
+        twoShow(){
+            if(this.oneShow == null && this.twoShow == null){                  
+                this.isBack = true
+            }
+        }
+    },  
+    methods:{              
         show(){            
             this.isShow = !this.isShow 
             $('.page1').addClass('rgba')                    
-        },
+        },        
+        foo(){
+            if(this.oneShow == null && this.twoShow == null){                  
+                this.isBack = true              
+                this.$router.push({path: '/page2'})
+            }
+        },        
         backColor(){
             $('.page1').removeClass('rgba')
         }
     },
     template:`
+    
     <div class="page1">
             <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡">        
             <div class="page1-content">
@@ -375,18 +391,16 @@ var page1 = {
                  </div>
                  <div class="radio">
                     <div class="line">
-                        <input type="radio" @click="check" name="one" id="one" value="One">
-                        <label for="one" @click="check">xxx章程</label> 
+                        <input type="radio" name="one" id="one" v-model="oneShow">                                               
+                        <label for="one">xxx章程</label> 
                     </div>                                  
                     <div class="line">
-                        <input type="radio" @click="check" name="two" id="two" value="Two">
-                        <label for="two" @click="check">xxx章程</label>
+                        <input type="radio" name="two" id="two" v-model="twoShow">
+                        <label for="two">xxx章程</label>
                     </div>
                  </div>
-            </div>        
-            <router-link to="/page2">                
-                <button disabled class="agree">同意协议并继续申请</button>
-            </router-link>
+            </div>       
+            <button class="agree" @click="foo" :class="{agree_back: isBack}">同意协议并继续申请</button>            
             <div class="mark" v-show="isShow">
                 <p>上海新版社保卡</p>
                 <div class="cont">
@@ -398,7 +412,8 @@ var page1 = {
                  </div>
                  <input class="close" @click="show();backColor()" type="button" value="关闭">
             </div>       
-        </div>    
+        </div>  
+      
     `
 }
 var page2 = {
@@ -419,22 +434,25 @@ var page2 = {
             idmodel :'', 
             codemodel : '', 
             ramodel : '',
-            show: true                              
+            show: true,
+            num: 1,
+            num2: 2 ,
+            birth: ''                             
         }
-    },
+    },    
     mounted() {        
         myStore.state.count = this.in_value;
         myStore.state.oneType = this.onetypemodel;
         myStore.state.telTel = this.telmodel;
-        myStore.state.idId = this.idmodel;        
+        myStore.state.idId = this.idmodel; 
     },
     methods:{
           fn1() {
             myStore.state.count = this.in_value;
             myStore.state.telTel = this.telmodel; 
-            myStore.state.typeType = this.onetypemodel;          
-            myStore.state.idId = this.idmodel;          
-          },
+            myStore.state.oneType = this.onetypemodel;          
+            myStore.state.idId = this.idmodel;  
+          },          
           //发送验证码
           getCode(){
             const TIME_COUNT = 60;
@@ -457,23 +475,25 @@ var page2 = {
           },
           //验证姓名
           name(){
-              reg=/^[\u0391-\uFFE5]{2,4}$/;
+              reg=/^[\u4e00-\u9fa5a-zA-Z]+$/;
               if(!reg.test(this.in_value)){
-                  alert('请输入2-4位中文字符！')
+                  this.isBox = true                  
                   this.in_value = ''
                   this.isWarn = true                  
               } else{
+                  this.isBox = false
                   this.isWarn = false
               }             
-         },         
+         },   
          //验证手机号
          tel(){ 
             regTel = /^1[3|4|5|7|8]\d{9}$/;            
             if(!regTel.test(this.telmodel)){
-                alert("请输入正确的11位手机号码！");
+                this.isBox = true
                 this.telmodel = ''
                 this.telWarn = true  
             }else{
+                this.isBox = false
                 this.telWarn = false
             }   
          }, 
@@ -481,20 +501,96 @@ var page2 = {
          code(){
              recode = /^\d{6}$/;            
              if(!recode.test(this.codemodel)){                 
-                alert("请输入正确的验证码");
+                this.isBox = true
                 this.codemodel = ''
                 this.codeWarn = true
              }else{
-                 this.codeWarn = false
+                this.isBox = false
+                this.codeWarn = false
              }
          },
+         //判断身份正则
+         idCallback(){
+            if(this.onetypemodel == '01') {  //监听身份证验证                 
+                let reId = /^[1-9][0-9]{5}(19|20)[0-9]{2}((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|31)|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|[1-2][0-9]))[0-9]{3}([0-9]|x|X)$/; 
+                if(!reId.test(this.idmodel)){                    
+                    this.idWarn = true
+                }else{
+                    this.idWarn = false
+                } 
+            } 
+            if(this.onetypemodel == '02') {  //监听军官证验证                
+                let filter_jg = /^[a-zA-Z0-9]{7,21}$/;   
+                if(!filter_jg.test(this.idmodel)){    
+                    this.idWarn = true  
+                }else{
+                    this.idWarn = false                    
+                }                 
+            }
+            if(this.onetypemodel == '03') {  //监听武装警官证
+                let filter_live = /^[a-zA-Z]{3}\d{12}$/;    //暂时找不到
+                if(!filter_live.test(this.idmodel)){    
+                    this.idWarn = true  
+                }else{
+                    this.idWarn = false                    
+                }  
+            }
+            if(this.onetypemodel == '04') {  //监听香港特区护照/港澳居民来往内地通行证
+                let filter_xg = /^[a-zA-Z0-9]{6,10}$/;    
+                if(!filter_xg.test(this.idmodel)){    
+                    this.idWarn = true  
+                }else{
+                    this.idWarn = false                    
+                } 
+            }
+            if(this.onetypemodel == '05') {  //监听澳门特区护照/港澳居民来往内地通行证
+                let filter_xg = /^[a-zA-Z0-9]{6,10}$/;  
+                if(!filter_xg.test(this.idmodel)){    
+                    this.idWarn = true  
+                }else{
+                    this.idWarn = false                    
+                } 
+            }
+            if(this.onetypemodel == '06') {  //监听台湾居民来往内地通行证
+                let filter_tw = /^([0-9]{8}|[0-9]{10})$/;   
+                if(!filter_tw.test(this.idmodel)){    
+                    this.idWarn = true  
+                }else{
+                    this.idWarn = false                    
+                } 
+            }      
+            if(this.onetypemodel == '07') {  //监听外国人永久居留证
+                let filter_live = /^[a-zA-Z]{3}\d{12}$/;   
+                if(!filter_live.test(this.idmodel)){    
+                    this.idWarn = true  
+                }else{
+                    this.idWarn = false                    
+                }  
+            }
+            if(this.onetypemodel == '08') {  //监听外国人护照
+                let filter_live = /^[a-zA-Z]{3}\d{12}$/;    //暂时找不到
+                if(!filter_live.test(this.idmodel)){    
+                    this.idWarn = true  
+                }else{
+                    this.idWarn = false                    
+                }  
+            }      
+         },                 
          jump(){              
              if(this.ramodel == '' || this.in_value == '' || this.idmodel == '' || this.telmodel == '' || this.codemodel == ''){
-                 this.isBox = true               
+                this.name();
+                this.code();
+                this.tel();  
+                this.idCallback();                
+                this.isBox = true;
+                // if(this.onetypemodel == '01'){
+                //     this.birth = this.idmodel.substring(6, 10) + "-" + this.idmodel.substring(10, 12) + "-" + this.idmodel.substring(12, 14);
+                //     return this.birth;
+                // }
              }else{ 
                 this.isBox = false
                 this.$router.push({ path : '/page3'})
-             }                    
+             }                                 
          },
          aa(){
             this.show = !this.show
@@ -507,80 +603,80 @@ var page2 = {
          },         
     },
     watch:{
-        onetypemodel(val,oldVal){    //反过来监听         
-            if(this.onetypemodel == '01') {  //监听身份证验证 
+         //onetypemodel(val,oldVal){    //反过来监听                  
+        //     if(this.onetypemodel == '01') {  //监听身份证验证 
+        //         let reId = /^[1-9][0-9]{5}(19|20)[0-9]{2}((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|31)|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|[1-2][0-9]))[0-9]{3}([0-9]|x|X)$/; 
+        //         if(!reId.test(val)){
+        //             this.idWarn = true
+        //         }else{
+        //             this.idWarn = false
+        //         } 
+        //     } 
+        //     if(this.onetypemodel == '02') {  //监听军官证验证                
+        //         let filter_jg = /^[a-zA-Z0-9]{7,21}$/;   
+        //         if(!filter_jg.test(val)){    
+        //             this.idWarn = true  
+        //         }else{
+        //             this.idWarn = false                    
+        //         }                 
+        //     }
+        //     if(this.onetypemodel == '03') {  //监听武装警官证
+        //         let filter_live = /^[a-zA-Z]{3}\d{12}$/;    //暂时找不到
+        //         if(!filter_live.test(val)){    
+        //             this.idWarn = true  
+        //         }else{
+        //             this.idWarn = false                    
+        //         }  
+        //     }
+        //     if(this.onetypemodel == '04') {  //监听香港特区护照/港澳居民来往内地通行证
+        //         let filter_xg = /^[a-zA-Z0-9]{6,10}$/;    
+        //         if(!filter_xg.test(val)){    
+        //             this.idWarn = true  
+        //         }else{
+        //             this.idWarn = false                    
+        //         } 
+        //     }
+        //     if(this.onetypemodel == '05') {  //监听澳门特区护照/港澳居民来往内地通行证
+        //         let filter_xg = /^[a-zA-Z0-9]{6,10}$/;  
+        //         if(!filter_xg.test(val)){    
+        //             this.idWarn = true  
+        //         }else{
+        //             this.idWarn = false                    
+        //         } 
+        //     }
+        //     if(this.onetypemodel == '06') {  //监听台湾居民来往内地通行证
+        //         let filter_tw = /^([0-9]{8}|[0-9]{10})$/;   
+        //         if(!filter_tw.test(val)){    
+        //             this.idWarn = true  
+        //         }else{
+        //             this.idWarn = false                    
+        //         } 
+        //     }      
+        //     if(this.onetypemodel == '07') {  //监听外国人永久居留证
+        //         let filter_live = /^[a-zA-Z]{3}\d{12}$/;   
+        //         if(!filter_live.test(val)){    
+        //             this.idWarn = true  
+        //         }else{
+        //             this.idWarn = false                    
+        //         }  
+        //     }
+        //     if(this.onetypemodel == '08') {  //监听外国人护照
+        //         let filter_live = /^[a-zA-Z]{3}\d{12}$/;    //暂时找不到
+        //         if(!filter_live.test(val)){    
+        //             this.idWarn = true  
+        //         }else{
+        //             this.idWarn = false                    
+        //         }  
+        //     }         
+        // },     
+        idmodel(val){            
+            if(this.onetypemodel == '01') {  //监听身份证验证                 
                 let reId = /^[1-9][0-9]{5}(19|20)[0-9]{2}((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|31)|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|[1-2][0-9]))[0-9]{3}([0-9]|x|X)$/; 
                 if(!reId.test(val)){
                     this.idWarn = true
                 }else{
                     this.idWarn = false
-                } 
-            } 
-            if(this.onetypemodel == '02') {  //监听军官证验证                
-                let filter_jg = /^[a-zA-Z0-9]{7,21}$/;   
-                if(!filter_jg.test(val)){    
-                    this.idWarn = true  
-                }else{
-                    this.idWarn = false                    
-                }                 
-            }
-            if(this.onetypemodel == '03') {  //监听武装警官证
-                let filter_live = /^[a-zA-Z]{3}\d{12}$/;    //暂时找不到
-                if(!filter_live.test(val)){    
-                    this.idWarn = true  
-                }else{
-                    this.idWarn = false                    
-                }  
-            }
-            if(this.onetypemodel == '04') {  //监听香港特区护照/港澳居民来往内地通行证
-                let filter_xg = /^[a-zA-Z0-9]{6,10}$/;    
-                if(!filter_xg.test(val)){    
-                    this.idWarn = true  
-                }else{
-                    this.idWarn = false                    
-                } 
-            }
-            if(this.onetypemodel == '05') {  //监听澳门特区护照/港澳居民来往内地通行证
-                let filter_xg = /^[a-zA-Z0-9]{6,10}$/;  
-                if(!filter_xg.test(val)){    
-                    this.idWarn = true  
-                }else{
-                    this.idWarn = false                    
-                } 
-            }
-            if(this.onetypemodel == '06') {  //监听台湾居民来往内地通行证
-                let filter_tw = /^([0-9]{8}|[0-9]{10})$/;   
-                if(!filter_tw.test(val)){    
-                    this.idWarn = true  
-                }else{
-                    this.idWarn = false                    
-                } 
-            }      
-            if(this.onetypemodel == '07') {  //监听外国人永久居留证
-                let filter_live = /^[a-zA-Z]{3}\d{12}$/;   
-                if(!filter_live.test(val)){    
-                    this.idWarn = true  
-                }else{
-                    this.idWarn = false                    
-                }  
-            }
-            if(this.onetypemodel == '08') {  //监听外国人护照
-                let filter_live = /^[a-zA-Z]{3}\d{12}$/;    //暂时找不到
-                if(!filter_live.test(val)){    
-                    this.idWarn = true  
-                }else{
-                    this.idWarn = false                    
-                }  
-            }         
-        },      
-        idmodel(val,oldVal){            
-            if(this.onetypemodel == '01') {  //监听身份证验证 
-                let reId = /^[1-9][0-9]{5}(19|20)[0-9]{2}((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|31)|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|[1-2][0-9]))[0-9]{3}([0-9]|x|X)$/; 
-                if(!reId.test(val)){
-                    this.idWarn = true
-                }else{
-                    this.idWarn = false
-                } 
+                }                                
             } 
             if(this.onetypemodel == '02') {  //监听军官证验证                
                 let filter_jg = /^[a-zA-Z0-9]{7,21}$/;   
@@ -651,8 +747,8 @@ var page2 = {
         </div>
         <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡">
         <div class="page2-title">
-            <div @click="backHandle" class="fl backRouter"><返回</div>
-            <div class="title fl">企业社保卡申请</div>
+            <div @click="backHandle" class="fl backRouter"><</div>
+            <div class="title fl" >企业社保卡申请</div>            
         </div> 
         <div class="page2-contant">
             <div class="select">
@@ -696,7 +792,7 @@ var page2 = {
                     <span>证件号码</span><span class="must">*</span> 
                 </div>
                 <div class="select-r fl">
-                    <input type="text" :class="{warn: idWarn}" @input="fn1" id="cardInput" v-model="idmodel" placeholder="请输入您的证件号">                    
+                    <input type="text" @change="idCallback" :class="{warn: idWarn}" @input="fn1" id="cardInput" v-model="idmodel" placeholder="请输入您的证件号">                    
                 </div>
             </div>
             <div class="form-tel">
@@ -712,7 +808,7 @@ var page2 = {
                     <span>验证码</span><span class="must">*</span> 
                 </div>
                 <div class="select-r fl">
-                    <input type="text" :class="{warn: codeWarn}" @change="code" id="code" v-model="codemodel" placeholder="请输入手机验证码"><input type="button" v-show="show" @click="getCode"  class="send-code" value="发送验证码"><button v-show="!show" class="count">重新发送({{count}})'s</button>
+                    <input type="text" :class="{warn: codeWarn}" @change="code" id="code" v-model="codemodel" placeholder="请输入手机验证码"><input type="button" v-show="show" @click="getCode"  class="send-code" value="发送验证码"><button v-show="!show" class="count">重新发送 {{count}}'s</button>
                 </div>
             </div>
             <button @click="jump();aa()"id="page3">下一步</button>            
@@ -723,8 +819,8 @@ var page2 = {
 var page3 = { 
     data(){
          return{      
-            sexmodel :'',
-            birthmodel :'',
+            // sexmodel :'',
+            // birthmodel :'',
             countrymodel :'',
             nationmodel :'',
             occupationmodel :'',
@@ -735,12 +831,17 @@ var page3 = {
             long : '',           
             in_value : myStore.state.count,
             id_value: myStore.state.idId,
-            tel_value: myStore.state.telTel,
+            tel_value: myStore.state.telTel,            
             isBox: false, 
             idWarn : false ,
-            show: true         
+            show: true ,
+            nameAbled: false ,       
+            idAbled: false ,       
+            telAbled: false ,              
+            idmodel : myStore.state.idId , 
+            onetypemodel: myStore.state.oneType,              
          }
-    },      
+    },             
     mounted() { 
         myStore.state.sexSex = this.sexmodel;      
         myStore.state.birthBirth = this.birthmodel;      
@@ -750,9 +851,9 @@ var page3 = {
         myStore.state.idType = this.idTypemodel;      
         myStore.state.startStart = this.startmodel;      
         myStore.state.endEnd = this.endmodel;      
-        myStore.state.fixedFixed = this.fixedmodel;      
+        myStore.state.fixedFixed = this.fixedmodel;                  
     }, 
-    methods:{
+    methods:{          
           fn1() {            
             myStore.state.sexSex = this.sexmodel;
             myStore.state.birthBirth = this.birthmodel;                      
@@ -777,7 +878,7 @@ var page3 = {
             }
           }, 
          jump(){ 
-            if(this.sexmodel == '' || this.birthmodel == '' || this.countrymodel == '' || this.nationmodel == '' || this.occupationmodel == '' || this.idTypemodel == '' || this.startmodel == '' || this.endmodel == '' || this.idnummodel == '' || this.telmodel == ''){
+            if(this.sexmodel == '' || this.birthmodel == '' || this.countrymodel == '' || this.nationmodel == '' || this.occupationmodel == '' || this.idTypemodel == '' || this.startmodel == '' || this.idnummodel == '' || this.telmodel == ''){
                 this.isBox = true                
             }else{
                 this.isBox = false
@@ -793,21 +894,49 @@ var page3 = {
          }, 
          sure(){
             if(this.isBox == true) this.isBox = false            
-         }, 
+         },   
+    },   
+    computed:{
+        birthmodel(){
+            this.birth = this.idmodel.substring(6, 10) + "-" + this.idmodel.substring(10, 12) + "-" + this.idmodel.substring(12, 14);
+            return this.birth;
+        },
+        // sexmodel(){  //获取性别
+        //     this.sex = parseInt(this.idmodel.substr(16, 1)) % 2           
+        //     if (this.sex == 1) {                 
+        //         console.log('男')
+        //     } else{
+        //         console.log('女')
+        //     }           
+        // },               
     }, 
-    watch:{
+    watch:{   
+        idTypemodel(val){
+            if(onetypemodel == '01'){
+                val = onetypemodel
+            }
+        },
+        // sexmodel(val){//获取性别
+        //     this.sex = parseInt(this.idmodel.substr(16, 1)) % 2           
+        //     if (this.sex == 1) { 
+        //         console.log(111)                           
+        //         val = '男'
+        //     } else{
+        //         console.log(222) 
+        //         val = '女'
+        //     }           
+        // },            
         //长期有效
         long(){
-            if(!this.long){                
+            if(!this.long){                           
                 $('#endDate').attr('disabled',true)
             }else{
                 $('#endDate').attr('disabled',false)
             }                                             
-        },        
+        },             
     }, 
-    template:`
-    <transition name="fade">
-    <div v-if="show" class="page3">            
+    template:`    
+    <div class="page3">            
         <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡">
         <div :class="{warnMark: isBox}">
             <div class="warnBox" :class="{warnAnmit: isBox}">
@@ -817,14 +946,14 @@ var page3 = {
             </div>
         </div>        
         <div class="page3-title left-margin" >
-            <div @click="backHandle" class="fl backRouter"><返回</div>
-            <div class="title fl">个人信息（必填）</div>
+            <div @click="backHandle" class="fl backRouter backRouter3"><</div>
+            <div class="title fl">个人信息（必填）{{onetypemodel}}</div>            
         </div>  
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">姓名<i></i></div>
             <div class="select-r fl">
-                <input type="text" @input="fn1" v-model="in_value">
-            </div>           
+                <input type="text" @input="fn1" disabled v-model="in_value">
+            </div>        
         </div>
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">性别<i></i></div>
@@ -840,7 +969,7 @@ var page3 = {
         <div class="page3-div left-margin">
             <div class="select-l fl alignment start_date_left">出生日期<i></i></div>
             <div class="select-r fl">
-                <input type="date" @input="fn1" v-model="birthmodel" class="date">
+                <input type="date" @input="fn1" v-model="birthmodel" class="date">                
             </div>            
         </div>        
         <div class="page3-div left-margin">
@@ -1217,13 +1346,13 @@ var page3 = {
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">证件号码<i></i></div>
             <div class="select-r fl">
-                <input type="text" @input="fn1" v-model="id_value" placeholder="请输入您的证件号码">
+                <input type="text" @input="fn1" disabled v-model="id_value" placeholder="请输入您的证件号码">
             </div>
         </div>
         <div class="page3-div left-margin">
             <div class="select-l fl alignment">手机号码<i></i></div>
             <div class="select-r fl">
-                <input type="number" @input="fn1" v-model="tel_value" placeholder="请输入11位手机号" maxlength="11" minlength="11">
+                <input type="number" @input="fn1" disabled v-model="tel_value" placeholder="请输入11位手机号" maxlength="11" minlength="11">
             </div>
         </div> 
         <div class="page3-div left-margin">
@@ -1233,8 +1362,7 @@ var page3 = {
             </div>
         </div> 
         <button @click="jump" id="page4">下一步</button>                          
-    </div>
-    </transition>
+    </div>    
 `
 }
 var page4 = {
@@ -1247,12 +1375,12 @@ var page4 = {
            addressRadio : '' , 
            isBox:false,           
            area:[ 
-                {
-                    text:'----- 请选择 -----',
-                    children:[                        
-                        {text:'----- 请选择 -----'},                        
-                    ]
-                },               
+                // {
+                //     text:'----- 请选择 -----',
+                //     children:[                        
+                //         {text:'----- 请选择 -----'},                        
+                //     ]
+                // },               
                 {
                     text:"黄浦区",
                     children:[                        
@@ -1643,7 +1771,7 @@ var page4 = {
    },    
    created(){    　　
         this.netmodel = this.area[0].text;        
-        this.secondnetmodel = this.area[0].children.text;
+        
    },  
    mounted() {        
        myStore.state.addressAddress = this.addressmodel; 
@@ -1655,19 +1783,20 @@ var page4 = {
    computed:{
         citys: function() {  //计算对应的二级菜单
             for (var i = 0; i < this.area.length; i++) {                
-                if (this.area[i].text === this.netmodel) {                    
+                if (this.area[i].text === this.netmodel) { 
+                    this.secondnetmodel = this.area[i].children[0].value                 
                     return this.area[i].children;
-                }
+                }                
             }
-        }
-   }, 
+        },        
+   },    
    methods:{
        fn1() {
            myStore.state.addressAddress = this.addressmodel;
            myStore.state.netNet = this.netmodel;  
            myStore.state.deliveryD = this.delivery; 
            myStore.state.secondNetNet = this.secondnetmodel;  
-           myStore.state.addressRadioR = this.addressRadio;                        
+           myStore.state.addressRadioR = this.addressRadio;                                 
        },        
        jump(){ 
             if(this.addressmodel == '' || this.delivery == '' || this.netmodel == '' || this.secondnetmodel == '' ){
@@ -1701,7 +1830,7 @@ var page4 = {
     </div>
     <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡"> 
     <div class="page3-title left-margin" >
-        <div @click="backHandle" class="fl backRouter"><返回</div>
+        <div @click="backHandle" class="fl backRouter"><</div>
         <div class="title fl">地址信息（必填）</div>
     </div>  
     <div class="page3-div left-margin page4-address">
@@ -1742,7 +1871,7 @@ var page4 = {
         <div class="select-l page4-select-l fl alignment"><i></i></div>
         <div class="select-r page4-select-r fl "> 
             <select id="second" @input="fn1" v-model="secondnetmodel">       
-                <option v-for="city in citys" :value="city.value" >{{city.text}}</option>                
+                <option v-for="(city, index) of citys" :value="city.value">{{city.text}}</option>                
             </select>                   
         </div>  
     </div>            
@@ -1783,7 +1912,8 @@ var page5 = {
             $('.information').hide();
             $('.left-margin').hide();
             $('#page5').hide();
-            $('#page5-sub').hide();            
+            $('#page5-sub').hide(); 
+            this.$router.push({path:'/page6'})           
         },
         backHandle(){  //返回上级路由
             this.$router.back()
@@ -1803,7 +1933,7 @@ var page5 = {
         </div>           
         <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡"> 
         <div class="page3-title left-margin">
-            <div @click="backHandle" class="fl backRouter"><返回</div>
+            <div @click="backHandle" class="fl backRouter"><</div>
             <div class="title fl">您输入的信息如下所示，请检查是否正确</div>
         </div> 
         <div class="information">
@@ -1823,8 +1953,7 @@ var page5 = {
             <p>通讯地址：{{addressmodel}}</p> 
             <p>上海市投递地址：{{delivery}}</p>          
             <p>自领网店：{{netmodel}}</p>
-            <p>{{secondnetmodel}}</p>
-            <img :src="imgUrl">
+            <p>{{secondnetmodel}}</p>            
         </div>    
         <button @click="modify" id="page5">返回修改</button>                
         <button @click="confirm" id="page5-sub">确认提交</button>              
@@ -1877,7 +2006,7 @@ var page6 = {
         </div>
         <img class="img-title" src="./img/title.jpg" width="100%" alt="招商银行社保IC卡"> 
         <div class="left-margin">
-            <div @click="backHandle" class="fl backRouter"><返回</div>
+            <div @click="backHandle" class="fl backRouter"><</div>
             <div class="title fl">请上传身份证正反面照片，确保图片清晰，四角完整</div>
         </div>                      
         <div class="id_img_wp">
@@ -1941,8 +2070,8 @@ var router = new VueRouter({
         {
             path:"*",
             redirect: "/page1"
-        }
-    ]
+        },        
+    ],    
 })
 
 
@@ -1968,7 +2097,7 @@ let vm = new Vue({
         backHandle(){  //返回上级路由
            this.$router.back()
         }, 
-    },  
+    },     
     //监听事件变换
     watch:{
         '$route' (to,from){  //监听路由是否是第一屏
@@ -1977,7 +2106,16 @@ let vm = new Vue({
             }else{
                 this.isShow = true
             }; 
-        },        
+        },    
+        meta: {        
+            keepAlive: true
+        }, 
+        beforeRouteLeave(to, from, next) {
+            if (to.path == "/page3") {
+              to.meta.keepAlive = true;
+            } 
+            next();
+        },     
         //监听路由发生变化时执行
         /*$route: {
             handler: function(val, oldVal){
